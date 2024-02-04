@@ -13,7 +13,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import {auth} from '../../services/firebase-config'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
-const Login = () => {
+const Signup = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,7 +71,7 @@ const Login = () => {
         {
           isLoading ? (<ActivityIndicator size='large' color={colors.pink} />) : 
           (<TouchableOpacity style={styles.btn} onPress={loginAction}>
-            <Text style={styles.btn_txt}>Login</Text>
+            <Text style={styles.btn_txt}>Sign Up</Text>
           </TouchableOpacity>)
         }
 
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
 });
 
 export const screenOptions = () => {
-  return {
-    headerShown: false
+    return {
+      headerShown: false
+    }
   }
-}
-
-export default Login;
+  
+export default Signup;

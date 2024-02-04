@@ -1,10 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { auth } from '../../services/firebase-config'
 
 const Settings = () => {
     return(
         <View style={styles.container}>
             <Text style={styles.title}>Settings</Text>
+            <Button onPress={() => auth.signOut()} title='Sign Out' />
         </View>
     )
 }

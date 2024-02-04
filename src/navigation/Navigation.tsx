@@ -13,10 +13,14 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
+import Login, {screenOptions as LoginScreenOptions} from "../screens/auth/Login";
+import Signup, {screenOptions as SignupScreenOptions} from "../screens/auth/Signup";
+
 const DashboardStackNavigator = createNativeStackNavigator();
 const PlaylistStackNavigator = createNativeStackNavigator();
 const SocialStackNavigator = createNativeStackNavigator();
 const GenresStackNavigator = createNativeStackNavigator();
+const AuthStackNavigator = createNativeStackNavigator();
 
 const defaultNavOptions = {
     headerStyle: {backgroundColor: colors.prussian_blue},
@@ -56,6 +60,15 @@ export const GenresStack = () => {
     </GenresStackNavigator.Navigator>
   );
 };
+
+export const AuthStack = () => {
+  return(
+    <AuthStackNavigator.Navigator>
+      <AuthStackNavigator.Screen name='login' component={Login} options={LoginScreenOptions} />
+      <AuthStackNavigator.Screen name='signup' component={Signup} options={SignupScreenOptions} />
+    </AuthStackNavigator.Navigator>
+  )
+}
 
 const AppBottomTabs = createMaterialBottomTabNavigator();
 export const AppTabs = () => {

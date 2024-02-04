@@ -1,13 +1,14 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { View, StyleSheet } from 'react-native';
-import Welcome from './src/screens/Welcome';
 import { NavigationContainer } from '@react-navigation/native';
-import { AppTabs } from './src/navigation/Navigation';
+import { AppTabs, AuthStack } from './src/navigation/Navigation';
 import { MD3LightTheme as DefaultTheme, Provider as PaperProvider  } from 'react-native-paper';
 import colors from './src/services/appColors';
-import Login from './src/screens/auth/Login';
+import { auth } from './src/services/firebase-config';
+import { onAuthStateChanged } from 'firebase/auth';
+
 
 const theme = {
   ...DefaultTheme,
@@ -18,6 +19,8 @@ const theme = {
 }
 
 const App = () => {
+
+  const [isUser, setIsUser] = useState(false);
 
   const [fontsLoaded] = useFonts({
     "Raleway-Bold": require("./assets/fonts/Raleway-Bold.ttf"),
@@ -37,11 +40,27 @@ const App = () => {
     return null
   }
 
+  const handleAuthStateChange = async(authUser) => {
+    if(authUser){
+      setIsUser(true)
+    } else {
+      setIsUser(false)
+    }
+  } 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
+    return unsubscribe;
+  },[])
+
+
   return(
     <View style={styles.container} onLayout={onLayoutRootView}>
       <NavigationContainer>
         <PaperProvider theme={theme}>
-          <Login />
+          {
+            isUser ? (<AppTabs />) : (<AuthStack />)
+          }
         </PaperProvider>
       </NavigationContainer>
     </View>
