@@ -4,39 +4,94 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  FlatList,
   Alert,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
 import colors from "../../services/appColors";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {auth} from '../../services/firebase-config'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth, database } from "../../services/firebase-config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import styles from "../../services/appStyle";
+import { addDoc, collection } from "firebase/firestore";
 
-const Signup = () => {
+type Item = string;
 
+const Signup: React.FC = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [avatar] = useState(
+    "https://cdn.iconscout.com/icon/free/png-256/free-avatar-370-456322.png"
+  );
+
   const [isLoading, setIsLoading] = useState(false);
   const [errMsg, setErrMsg] = useState(null);
 
-  const loginAction = () => {
-    setIsLoading(true)
-    if(email !== "" && password !== ""){
-        signInWithEmailAndPassword(auth, email, password)
-        .then(res => {
-          setIsLoading(false)
-            console.log(res);
+  const initialItems: Item[] = [
+    "Rock",
+    "Jazz",
+    "Heavy Metal",
+    "Black Metal",
+    "Pop",
+    "Dance",
+    "Trance",
+    "R&B",
+    "Classic"
+  ];
+  const [firstViewItems, setFirstViewItems] = useState<Item[]>(initialItems);
+  const [secondViewItems, setSecondViewItems] = useState<Item[]>([]);
+
+  const moveToSecondView = (item: Item) => {
+    setFirstViewItems(firstViewItems.filter((i) => i !== item));
+    setSecondViewItems([...secondViewItems, item]);
+  };
+
+  const moveToFirstView = (item: Item) => {
+    setSecondViewItems(secondViewItems.filter((i) => i !== item));
+    setFirstViewItems([...firstViewItems, item]);
+  };
+
+  const signupAction = () => {
+    setIsLoading(true);
+    if (email !== "" && password !== "") {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(async (res) => {
+          const new_user = {
+            firstName: firstName,
+            lastName: lastName,
+            mobile: mobile,
+            avatar: avatar,
+            email: email,
+            uid: res.user.uid,
+          };
+
+          const accountsRef = await addDoc(
+            collection(database, "accounts"),
+            new_user
+          );
+
+          setIsLoading(false);
         })
-        .catch(err => {
-            Alert.alert(err.message)
-            setIsLoading(false)
-        })
+        .catch((err) => {
+          Alert.alert(err.message);
+          setIsLoading(false);
+        });
     } else {
-        Alert.alert("All inputs are require")
-        setIsLoading(false)
+      Alert.alert("All inputs are require");
+      setIsLoading(false);
     }
-  }
+  };
+
+  //firstName
+  //lastName
+  //genres
+  //mobile
+  //avatar
+  //pushToken
 
   return (
     <View style={styles.container}>
@@ -50,6 +105,31 @@ const Signup = () => {
       </View>
 
       <View style={styles.form_container}>
+        <TextInput
+          value={firstName}
+          onChangeText={(text) => setFirstName(text)}
+          keyboardType="default"
+          placeholder="First name"
+          style={styles.input}
+        />
+
+        <TextInput
+          value={lastName}
+          onChangeText={(text) => setLastName(text)}
+          keyboardType="default"
+          placeholder="Last name"
+          style={styles.input}
+        />
+
+        <TextInput
+          value={mobile}
+          onChangeText={(text) => setMobile(text)}
+          keyboardType="phone-pad"
+          placeholder="Mobile"
+          autoCapitalize="none"
+          style={styles.input}
+        />
+
         <TextInput
           value={email}
           onChangeText={(text) => setEmail(text)}
@@ -68,70 +148,58 @@ const Signup = () => {
           style={styles.input}
         />
 
-        {
-          isLoading ? (<ActivityIndicator size='large' color={colors.pink} />) : 
-          (<TouchableOpacity style={styles.btn} onPress={loginAction}>
+        <FlatList
+          data={firstViewItems}
+          renderItem={itemRow => (
+            <TouchableOpacity
+                onPress={() => moveToSecondView(itemRow.item)}
+                style={styles.item}>
+                <Text style={{ color: colors.white }}>{itemRow.item}</Text>
+                </TouchableOpacity>
+          )}
+          keyExtractor={(item, index) => `first_${index}`}
+          numColumns={3}
+          style={styles.list}
+        />
+        <FlatList
+          data={secondViewItems}
+          renderItem={itemRow => (
+            <TouchableOpacity
+                onPress={() => moveToFirstView(itemRow.item)}
+                style={styles.itemSec}>
+                <Text style={{ color: colors.white }}>{itemRow.item}</Text>
+                </TouchableOpacity>
+          )}
+          keyExtractor={(item, index) => `second_${index}`}
+          numColumns={3}
+          style={styles.list}
+        />
+
+        {isLoading ? (
+          <ActivityIndicator size="large" color={colors.pink} />
+        ) : (
+          <TouchableOpacity style={styles.btn} onPress={signupAction}>
             <Text style={styles.btn_txt}>Sign Up</Text>
-          </TouchableOpacity>)
-        }
+          </TouchableOpacity>
+        )}
 
-
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("login");
+          }}
+          style={styles.outline_btn}
+        >
+          <Text style={styles.outline_btn_txt}>Back to Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  btn_txt: {
-    fontFamily: "Raleway-Medium",
-    fontSize: 20,
-    color: colors.white,
-  },
-  btn: {
-    backgroundColor: colors.pink,
-    borderRadius: 12,
-    padding: 12,
-    width: "100%",
-    fontSize: 18,
-    alignItems: "center",
-  },
-  form_container: {
-    width: "100%",
-    marginTop: 30,
-  },
-  input: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 12,
-    width: "100%",
-    fontSize: 18,
-    fontFamily: "Raleway-Medium",
-    marginBottom: 12,
-  },
-  logo_container: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 40,
-    justifyContent: "center",
-    backgroundColor: colors.celeste,
-  },
-  title: {
-    color: colors.prussian_blue,
-    marginLeft: -14,
-    fontSize: 40,
-    fontFamily: "Lobster-Regular",
-  },
-});
-
 export const screenOptions = () => {
-    return {
-      headerShown: false
-    }
-  }
-  
+  return {
+    headerShown: false,
+  };
+};
+
 export default Signup;

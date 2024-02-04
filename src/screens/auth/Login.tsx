@@ -12,8 +12,9 @@ import colors from "../../services/appColors";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {auth} from '../../services/firebase-config'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import styles from '../../services/appStyle';
 
-const Login = () => {
+const Login = (props) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,58 +76,15 @@ const Login = () => {
           </TouchableOpacity>)
         }
 
+        <TouchableOpacity onPress={() => {props.navigation.navigate("signup")}} style={styles.outline_btn}>
+          <Text style={styles.outline_btn_txt}>Don't have an account? SignUp Now!</Text>
+        </TouchableOpacity>
+
 
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  btn_txt: {
-    fontFamily: "Raleway-Medium",
-    fontSize: 20,
-    color: colors.white,
-  },
-  btn: {
-    backgroundColor: colors.pink,
-    borderRadius: 12,
-    padding: 12,
-    width: "100%",
-    fontSize: 18,
-    alignItems: "center",
-  },
-  form_container: {
-    width: "100%",
-    marginTop: 30,
-  },
-  input: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 12,
-    width: "100%",
-    fontSize: 18,
-    fontFamily: "Raleway-Medium",
-    marginBottom: 12,
-  },
-  logo_container: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 40,
-    justifyContent: "center",
-    backgroundColor: colors.celeste,
-  },
-  title: {
-    color: colors.prussian_blue,
-    marginLeft: -14,
-    fontSize: 40,
-    fontFamily: "Lobster-Regular",
-  },
-});
 
 export const screenOptions = () => {
   return {

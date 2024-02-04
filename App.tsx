@@ -22,6 +22,19 @@ const App = () => {
 
   const [isUser, setIsUser] = useState(false);
 
+  const handleAuthStateChange = async(authUser) => {
+    if(authUser){
+      setIsUser(true)
+    } else {
+      setIsUser(false)
+    }
+  } 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
+    return unsubscribe;
+  },[])
+
   const [fontsLoaded] = useFonts({
     "Raleway-Bold": require("./assets/fonts/Raleway-Bold.ttf"),
     "Raleway-Light": require("./assets/fonts/Raleway-Light.ttf"),
@@ -40,18 +53,7 @@ const App = () => {
     return null
   }
 
-  const handleAuthStateChange = async(authUser) => {
-    if(authUser){
-      setIsUser(true)
-    } else {
-      setIsUser(false)
-    }
-  } 
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
-    return unsubscribe;
-  },[])
 
 
   return(
