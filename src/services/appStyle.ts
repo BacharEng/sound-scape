@@ -134,4 +134,12 @@ export default StyleSheet.create({
         height:350
       },
 
+      add_btn:{
+        alignItems:'center',
+        justifyContent:'center',
+        width:100, height:100,
+        borderRadius:100,
+        backgroundColor:colors.prussian_blue,
+      }
+
 })
