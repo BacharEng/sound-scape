@@ -37,12 +37,23 @@ export default StyleSheet.create({
       input: {
         backgroundColor: colors.white,
         borderRadius: 12,
-        padding: 12,
+        padding: 10,
         width: "100%",
         fontSize: 18,
         fontFamily: "Raleway-Medium",
-        marginBottom: 12,
+        marginBottom:12
       },
+
+      input_search: {
+        backgroundColor: colors.white,
+        borderRadius: 6,
+        padding: 10,
+        width: "85%",
+        fontSize: 18,
+        fontFamily: "Raleway-Medium",
+      },
+
+
       logo_container: {
         flexDirection: "row",
         justifyContent: "center",
@@ -50,9 +61,6 @@ export default StyleSheet.create({
       },
       container: {
         flex: 1,
-        alignItems: "center",
-        padding: 40,
-        justifyContent: "center",
         backgroundColor: colors.celeste,
       },
       title: {
@@ -97,5 +105,33 @@ export default StyleSheet.create({
         margin: 5,
         borderRadius:6,
         backgroundColor: colors.pink,
-      }
+      },
+
+
+      search_container:{
+        width:'100%',
+        height:'10%',
+        padding:10,
+        backgroundColor:colors.pink,
+        flexDirection:'row',
+        justifyContent: 'space-between'
+      },
+      list_container: {
+        width:'100%',
+        height: '90%',
+        padding:10
+      },
+      search_btn:{
+        padding:10,
+        backgroundColor: colors.prussian_blue,
+        borderRadius:6
+      },
+
+
+
+      ti_main_image:{
+        width:'100%',
+        height:350
+      },
+
 })

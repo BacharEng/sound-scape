@@ -4,6 +4,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import colors from "../services/appColors";
 import Dashboard, {screenOptions as DashboardScreenOption} from "../screens/dashboard/Dahsboard";
+import TrackInfo, {screenOptions as TrackInfoScreenOption} from "../screens/dashboard/TrackInfo";
 import Playlist from "../screens/playlist/Playlist";
 import Social from "../screens/social/Social";
 import Genres from "../screens/genres/Genres";
@@ -32,6 +33,7 @@ export const DashboardStack = () => {
   return (
     <DashboardStackNavigator.Navigator screenOptions={defaultNavOptions}>
       <DashboardStackNavigator.Screen name="dashboard" component={Dashboard} options={DashboardScreenOption} />
+      <DashboardStackNavigator.Screen name="trackInfo" component={TrackInfo} options={TrackInfoScreenOption} />
       <DashboardStackNavigator.Screen name="settings" component={Settings}/>
     </DashboardStackNavigator.Navigator>
   );

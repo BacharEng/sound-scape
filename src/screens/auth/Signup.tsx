@@ -19,6 +19,7 @@ import { addDoc, collection } from "firebase/firestore";
 type Item = string;
 
 const Signup: React.FC = (props) => {
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -40,7 +41,7 @@ const Signup: React.FC = (props) => {
     "Dance",
     "Trance",
     "R&B",
-    "Classic"
+    "Classic",
   ];
   const [firstViewItems, setFirstViewItems] = useState<Item[]>(initialItems);
   const [secondViewItems, setSecondViewItems] = useState<Item[]>([]);
@@ -55,43 +56,32 @@ const Signup: React.FC = (props) => {
     setFirstViewItems([...firstViewItems, item]);
   };
 
-  const signupAction = () => {
+
+
+  const signupAction = async() => {
     setIsLoading(true);
+
+
     if (email !== "" && password !== "") {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(async (res) => {
-          const new_user = {
-            firstName: firstName,
-            lastName: lastName,
-            mobile: mobile,
-            avatar: avatar,
-            email: email,
-            uid: res.user.uid,
-          };
 
-          const accountsRef = await addDoc(
-            collection(database, "accounts"),
-            new_user
-          );
+      const user = await createUserWithEmailAndPassword(auth, email, password);
 
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          Alert.alert(err.message);
-          setIsLoading(false);
-        });
+      const docRef = await addDoc(collection(database, "accounts"), {
+        firstName: firstName,
+        lastName: lastName,
+        mobile: mobile,
+        avatar: avatar,
+        email:email,
+        uid: user.user.uid,
+        genres: secondViewItems
+      });
+
+
     } else {
       Alert.alert("All inputs are require");
       setIsLoading(false);
     }
   };
-
-  //firstName
-  //lastName
-  //genres
-  //mobile
-  //avatar
-  //pushToken
 
   return (
     <View style={styles.container}>
@@ -150,12 +140,13 @@ const Signup: React.FC = (props) => {
 
         <FlatList
           data={firstViewItems}
-          renderItem={itemRow => (
+          renderItem={(itemRow) => (
             <TouchableOpacity
-                onPress={() => moveToSecondView(itemRow.item)}
-                style={styles.item}>
-                <Text style={{ color: colors.white }}>{itemRow.item}</Text>
-                </TouchableOpacity>
+              onPress={() => moveToSecondView(itemRow.item)}
+              style={styles.item}
+            >
+              <Text style={{ color: colors.white }}>{itemRow.item}</Text>
+            </TouchableOpacity>
           )}
           keyExtractor={(item, index) => `first_${index}`}
           numColumns={3}
@@ -163,12 +154,13 @@ const Signup: React.FC = (props) => {
         />
         <FlatList
           data={secondViewItems}
-          renderItem={itemRow => (
+          renderItem={(itemRow) => (
             <TouchableOpacity
-                onPress={() => moveToFirstView(itemRow.item)}
-                style={styles.itemSec}>
-                <Text style={{ color: colors.white }}>{itemRow.item}</Text>
-                </TouchableOpacity>
+              onPress={() => moveToFirstView(itemRow.item)}
+              style={styles.itemSec}
+            >
+              <Text style={{ color: colors.white }}>{itemRow.item}</Text>
+            </TouchableOpacity>
           )}
           keyExtractor={(item, index) => `second_${index}`}
           numColumns={3}
