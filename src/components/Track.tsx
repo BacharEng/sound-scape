@@ -2,8 +2,24 @@ import React from 'react'
 import { View, TouchableOpacity, Text, StyleSheet, Image } from 'react-native'
 import appColors from '../services/appColors'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { useMutation } from 'react-query'
+import { auth } from '../services/firebase-config'
+import {addTrackToMyPlaylist} from '../services/playlistService';
+import { useMyplay } from '../store/useMyplay'
 
 const Track = (props) => {
+
+  const addTrackToPlaylist = useMyplay((state) => state.addTrackToPlaylist);
+  const {mutate, isLoading, error} = useMutation(addTrackToMyPlaylist, {
+    onSuccess: (data) => {
+      const uid = auth.currentUser?.uid;
+      addTrackToPlaylist({
+        uid,
+        ...props.track
+      })
+    }
+  })
+
 
   const fixLength = (str,lng) => {
     if(str && str.length > lng){
@@ -12,10 +28,15 @@ const Track = (props) => {
         return str
       }
   }
-
   const album = fixLength(props?.track?.collectionName, 20);
   const trackName = fixLength(props?.track?.trackName, 20);
   const artistName = fixLength(props?.track?.artistName, 30);
+  const isFav = props.myplaylist.filter(x => x.trackId === props.track.trackId);
+
+  const handleAdd = async() => {
+    const uid = auth.currentUser?.uid;
+    mutate({uid, ...props.track})
+  }
 
   return (
     <TouchableOpacity onPress={() => props.trackClick()} style={styles.row}>
@@ -29,7 +50,13 @@ const Track = (props) => {
         </View>
 
         <View style={styles.arrow}>
-            <MaterialIcons color={appColors.pink} size={24} name='favorite-border' />
+            {
+              isFav.length > 0 ? (
+                <MaterialIcons color={appColors.pink} size={24} name='favorite' />
+              ) : (
+                <MaterialIcons onPress={handleAdd} color={appColors.pink} size={24} name='favorite-border' />
+              )
+            }
         </View>
 
 

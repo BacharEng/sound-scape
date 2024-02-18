@@ -16,9 +16,11 @@ export interface MyPlaylist {
 interface MyPlaylistStore {
     myplaylist: MyPlaylist[];
     setMyPlaylist: (playlist: MyPlaylist[]) => void;
+    addTrackToPlaylist: (track: MyPlaylist) => void;
 }
 
 export const useMyplay = create<MyPlaylistStore>((set) => ({
     myplaylist:[],
-    setMyPlaylist: (myplaylist) => set({myplaylist})
+    setMyPlaylist: (myplaylist) => set({myplaylist}),
+    addTrackToPlaylist: (track) => set((state) => ({myplaylist: [...state.myplaylist, track]}))
 }))
