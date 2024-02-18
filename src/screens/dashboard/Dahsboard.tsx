@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import { 
-    View, 
-    Text, 
-    Alert,
-    ActivityIndicator,
-    FlatList,
-    TextInput, 
-    TouchableOpacity } from 'react-native';
+import { View, Text, Alert,ActivityIndicator,FlatList,TextInput, TouchableOpacity } from 'react-native';
 import colors from '../../services/appColors';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styles from '../../services/appStyle';
@@ -16,28 +9,30 @@ import axios from "axios";
 import Track from "../../components/Track";
 import { database, auth } from '../../services/firebase-config'
 import { collection, getDocs } from 'firebase/firestore'
+import { fetchPlaylist } from '../../services/playlistService';
+import { usePlaylistStore } from '../../store/usePlaylistStore';
 
-const Dashboard = (props) => {
+const Dashboard = () => {
 
-    const [playlist, setPlaylist] = useState([]);
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const setPlaylist = usePlaylistStore((state) => state.setPlaylist);
+    const playlist = usePlaylistStore((state) => state.playlist);
 
-    const loadPlaylist = async() => {
-        setIsLoading(true)
-        await axios.get(`https://itunes.apple.com/search?term=${search}`)
-        .then(res => {
-            setPlaylist(res.data.results);
-            setSearch("");
-            setIsLoading(false)
-        })
-        .catch(err => {
-            setIsLoading(false)
-            Alert.alert("Load playlist", err.message);
-        })
+    const fetchData = async() => {
+        if (!search.trim()) {
+            Alert.alert("Please enter a search parameter");
+            return;
+        }
+        try {
+            const results = await fetchPlaylist(search);
+            setPlaylist(results)
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Error', 'Failed to fetch results')
+        }
     }
 
-    
 
     return(
         <View style={styles.container}>
@@ -52,29 +47,23 @@ const Dashboard = (props) => {
                     style={styles.input_search}
                  />
 
-                 <TouchableOpacity onPress={loadPlaylist} style={styles.search_btn}>
+                 <TouchableOpacity onPress={fetchData} style={styles.search_btn}>
                     <FontAwesome name="search" size={26} color={colors.pink} />
                  </TouchableOpacity>
             </View>
 
             <View style={styles.list_container}>
                 {
-                    isLoading ? (<>
-                        <ActivityIndicator size='large' color={colors.pink} />
-                    </>) : (<>
-                        {
-                            playlist.length > 0 
-                            ? <FlatList
-                                style={{width:'100%'}}
-                                data={playlist}
-                                keyExtractor={item => item.trackId}
-                                renderItem={itemRow => 
-                                    <Track 
-                                        trackClick={() => {props.navigation.navigate("trackInfo", {track: itemRow.item} )}}
-                                        track={itemRow.item} />}
-                            />
-                            : <Text>No data for you :-(</Text>
-                        }
+                    playlist && (<>
+                    {
+                        <FlatList
+                            data={playlist}
+                            keyExtractor={(item) => item.trackId.toString()}
+                            renderItem={({item}) => (
+                                <Track track={item} />
+                            )}
+                        />
+                    }
                     </>)
                 }
             </View>
