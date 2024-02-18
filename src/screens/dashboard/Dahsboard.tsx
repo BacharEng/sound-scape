@@ -14,6 +14,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import appColors from "../../services/appColors";
 import axios from "axios";
 import Track from "../../components/Track";
+import { database, auth } from '../../services/firebase-config'
+import { collection, getDocs } from 'firebase/firestore'
 
 const Dashboard = (props) => {
 
@@ -34,6 +36,8 @@ const Dashboard = (props) => {
             Alert.alert("Load playlist", err.message);
         })
     }
+
+    
 
     return(
         <View style={styles.container}>
