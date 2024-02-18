@@ -27,6 +27,12 @@ const Track = (props) => {
             <Text style={styles.simple_txt}>{artistName}</Text>
             <Text style={styles.simple_txt}>Album: {album}</Text>
         </View>
+
+        <View style={styles.arrow}>
+            <MaterialIcons color={appColors.pink} size={24} name='favorite-border' />
+        </View>
+
+
         <View style={styles.arrow}>
             <MaterialIcons color={appColors.pink} size={24} name='keyboard-arrow-right' />
         </View>
@@ -39,7 +45,7 @@ const styles = StyleSheet.create({
     track_name: { fontFamily:'Raleway-Bold', fontSize:16, color:appColors.pink },
     image: {width:'100%', height:'100%', borderTopLeftRadius:6, borderBottomLeftRadius:6},
     image_container:{ width:'20%', height:80},
-    context_container:{ width:'70%', height:80, padding:10},
+    context_container:{ width:'60%', height:80, padding:10},
     arrow: {width:'10%', height:80, alignItems:'center', justifyContent:'center'},
     row:{
         width:'100%',

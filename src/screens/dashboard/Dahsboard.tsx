@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Alert,ActivityIndicator,FlatList,TextInput, TouchableOpacity } from 'react-native';
 import colors from '../../services/appColors';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -9,15 +9,20 @@ import axios from "axios";
 import Track from "../../components/Track";
 import { database, auth } from '../../services/firebase-config'
 import { collection, getDocs } from 'firebase/firestore'
-import { fetchPlaylist } from '../../services/playlistService';
+import { fetchPlaylist, fetchMyPlaylist } from '../../services/playlistService';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
+import { useMyplay } from '../../store/useMyplay';
 
-const Dashboard = () => {
+const Dashboard = (props) => {
 
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
     const setPlaylist = usePlaylistStore((state) => state.setPlaylist);
     const playlist = usePlaylistStore((state) => state.playlist);
+
+    const setMyPlaylist = useMyplay((state) => state.setMyPlaylist);
+    const myplaylist = useMyplay((state) => state.myplaylist);
 
     const fetchData = async() => {
         if (!search.trim()) {
@@ -33,6 +38,20 @@ const Dashboard = () => {
         }
     }
 
+    const fetchMyData = async() => {
+        try {
+            const results = await fetchMyPlaylist();
+            setMyPlaylist(results)
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Error', 'Failed to fetch results')
+        }
+    }
+
+    useEffect(() => {
+        fetchMyData()
+    },[])
+    
 
     return(
         <View style={styles.container}>
@@ -60,7 +79,11 @@ const Dashboard = () => {
                             data={playlist}
                             keyExtractor={(item) => item.trackId.toString()}
                             renderItem={({item}) => (
-                                <Track track={item} />
+                                <Track
+                                    trackClick={() => props.navigation.navigate('trackInfo', {track: item})}
+                                    track={item}
+                                    myplaylist={myplaylist}
+                                 />
                             )}
                         />
                     }
